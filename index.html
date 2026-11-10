@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Rejsebillet</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#eceae6;font-family:-apple-system,'SF Pro Text','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased}
+.app{width:100%;max-width:430px;height:100svh;margin:0 auto;overflow:hidden;position:relative;background:#eceae6}
+
+.wavebg{position:absolute;inset:0;z-index:0;pointer-events:none}
+
+.carousel{position:relative;z-index:1;width:100%;height:100%;overflow:hidden}
+.track{display:flex;height:100%;transition:transform .38s cubic-bezier(.25,.46,.45,.94)}
+
+.slide{
+  min-width:100%;height:100%;
+  overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:y mandatory;
+  scroll-behavior:smooth;
+  overscroll-behavior-x:none;
+}
+.page{
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+  min-height:100%;
+  display:flex;flex-direction:column;
+}
+
+.toprow{display:flex;align-items:center;gap:9px;padding:14px 12px 8px}
+.clockpill{
+  flex:1;background:#f0d85a;border-radius:12px;
+  padding:7px 0;text-align:center;
+  font-size:30px;font-weight:700;color:#2a2410;
+  letter-spacing:-1px;font-variant-numeric:tabular-nums;
+}
+.backbtn{
+  width:36px;height:36px;min-width:36px;
+  background:#2d5e22;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:20px;line-height:1;padding-bottom:1px;
+}
+
+.wcard{
+  margin:0 9px;
+  background:#fff;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 2px 14px rgba(0,0,0,.10);
+  position:relative;
+  flex-shrink:0;
+}
+.wcard::after{
+  content:'';position:absolute;right:5px;top:7%;height:22%;
+  width:3px;border-radius:2px;background:#dcd9d4;
+}
+
+.gb{background:#e3e1dc;border-radius:11px;margin:7px 9px 0;padding:9px 12px}
+.gl{font-size:10.5px;color:#9a9a9a;margin-bottom:1.5px}
+.gt{font-size:14.5px;font-weight:700;color:#111;line-height:1.25}
+.gs{font-size:13px;font-weight:500;color:#333}
+.gtx{font-size:11.5px;color:#333;line-height:1.5}
+.gtx b{font-weight:700}
+
+.exprow{display:flex;align-items:center}
+.exlb{font-size:12px;color:#999;min-width:64px}
+.exun{display:flex;gap:18px}
+.eu{text-align:center}
+.eun{display:block;font-size:18px;font-weight:700;color:#111;font-variant-numeric:tabular-nums;line-height:1.1}
+.eul{display:block;font-size:9.5px;color:#aaa;margin-top:1px}
+
+.bottom-wavy{
+  margin:7px 0 0;
+  position:relative;
+  background:#eceae6;
+  overflow:hidden;
+  padding:10px 14px 12px;
+}
+.bw-svg{position:absolute;inset:0;z-index:0;width:100%;height:100%}
+.bottom-content{
+  position:relative;z-index:1;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.azbox{
+  position:relative;
+  flex-shrink:0;
+  width:48%;
+  max-width:165px;
+  background:#fff;
+  padding:5px;
+  border-radius:3px;
+}
+.azbox canvas{
+  display:block;
+  width:100%;
+  aspect-ratio:1;
+  image-rendering:pixelated;
+}
+
+.badge{
+  background:#2d5e22;color:#fff;
+  font-size:13px;font-weight:600;
+  padding:9px 14px;border-radius:10px;
+  align-self:flex-end;
+  white-space:nowrap;
+  margin-bottom:6px;
+}
+
+.chevdiv{
+  background:#d9d6d0;
+  text-align:center;
+  padding:6px 0 8px;
+  color:#888;font-size:14px;
+  border-radius:0 0 18px 18px;
+  cursor:pointer;
+  user-select:none;
+}
+.chevdiv:active{background:#cfccc6}
+
+.dots{display:flex;justify-content:center;gap:7px;padding:9px 0 4px}
+.dot{width:6px;height:6px;border-radius:50%;background:#c8c5c0;transition:all .25s}
+.dot.on{background:#484440;transform:scale(1.3)}
+
+.facespacer{flex:1;min-height:20px}
+
+.page-info{
+  scroll-snap-align:start;
+  min-height:100%;
+  padding:14px 9px 24px;
+}
+.info-top{display:flex;justify-content:flex-end;margin-bottom:8px}
+.uparrow{
+  width:34px;height:34px;
+  background:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:#2d5e22;font-size:16px;
+  box-shadow:0 1px 6px rgba(0,0,0,.1);
+  cursor:pointer;
+}
+
+.secs{display:flex;flex-direction:column;gap:9px}
+.sec{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.iico{text-align:center;padding:11px 0 4px;color:#c5c2bd;font-size:17px}
+.ibox{border:1.3px solid #e2dfda;border-radius:11px;margin:0 11px 11px;padding:10px 11px;font-size:11.5px;color:#333;line-height:1.55}
+.ibox b{font-weight:700}
+.stit{font-size:14.5px;font-weight:700;color:#2d5e22;border-bottom:1px solid #eee;padding:11px 12px 8px}
+.srow{padding:8px 12px;border-bottom:1px solid #f2f0ed}
+.srow:last-child{border-bottom:none;padding-bottom:11px}
+.slb{font-size:10.5px;color:#aaa;margin-bottom:1.5px}
+.svl{font-size:13.5px;font-weight:600;color:#111}
+.s2c{display:flex}
+.s2c>div{flex:1}
+.gdot{display:inline-block;width:8px;height:8px;background:#2d5e22;border-radius:50%;margin-right:5px;vertical-align:middle}
+.ztags{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+.zt{background:#2d5e22;color:#fff;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600}
+.zm{border:1.3px solid #bbb;color:#888;border-radius:6px;padding:3px 9px;font-size:11px}
+.gbox{margin:0 11px 11px;background:#f3f2ee;border-radius:9px;padding:10px 11px;font-size:11.5px;color:#333;line-height:1.55}
+.gbox a{color:#007aff;text-decoration:none;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="app">
+
+<svg class="wavebg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+  <defs>
+    <pattern id="W" x="0" y="0" width="170" height="13" patternUnits="userSpaceOnUse">
+      <path d="M-10 6.5 Q32 0 75 6.5 Q118 13 180 6.5" stroke="#bcb8b0" stroke-width="1.1" fill="none"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#W)"/>
+</svg>
+
+<div class="carousel" id="car">
+<div class="track" id="trk">
+
+<!-- SLIDE 1 -->
+<div class="slide" id="sl0">
+  <div class="page">
+    <div class="toprow">
+      <div class="clockpill" id="clk1">14:28:47</div>
+      <div class="backbtn">&#8249;</div>
+    </div>
+    <div class="wcard">
+      <div class="gb"><div class="gl">Special ticket</div><div class="gt">ViborgUNG</div><div class="gs">Adult</div></div>
+      <div class="gb"><div class="gl">Ticket validity</div><div class="gtx">ViborgUNG is an inexpensive ticket for everyone aged 16 through 26. The ticket can be used on all city buses, local buses, and regional buses within Viborg Municipality &#8212; around the clock. <b>The ticket cannot be used on DSB trains, or GoCollective trains.</b></div></div>
+      <div class="gb" style="margin-bottom:0">
+        <div class="exprow">
+          <span class="exlb">Expires:</span>
+          <div class="exun">
+            <div class="eu"><span class="eun" id="d1">12</span><span class="eul">Days</span></div>
+            <div class="eu"><span class="eun" id="h1">09</span><span class="eul">Hours</span></div>
+            <div class="eu"><span class="eun" id="m1">32</span><span class="eul">Minutes</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-wavy">
+        <svg class="bw-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <defs><pattern id="BW" x="0" y="0" width="170" height="13" patternUnits="userSpaceOnUse">
+            <path d="M-10 6.5 Q32 0 75 6.5 Q118 13 180 6.5" stroke="#bcb8b0" stroke-width="1.1" fill="none"/>
+          </pattern></defs>
+          <rect width="100%" height="100%" fill="url(#BW)"/>
+        </svg>
+        <div class="bottom-content">
+          <div class="azbox">
+            <canvas id="az1" width="500" height="500"></canvas>
+          </div>
+          <div class="badge">Inside valid area</div>
+        </div>
+      </div>
+      <div class="chevdiv" onclick="openInfo(0)">&#8964;</div>
+    </div>
+    <div class="dots">
+      <div class="dot on" id="da0"></div>
+      <div class="dot" id="da1"></div>
+    </div>
+    <div class="facespacer"></div>
+  </div>
+  <div class="page-info">
+    <div class="info-top"><div class="uparrow" onclick="closeInfo(0)">&#8963;</div></div>
+    <div class="secs">
+      <div class="sec"><div class="iico">&#9432;</div><div class="ibox">Valid for city buses, local buses, and regional buses within Viborg Municipality. All young people from age 16 through 26 can buy ViborgUNG. ViborgUNG is not valid for travel across the municipal border. <b>The ticket cannot be used on DSB or GoCollective trains.</b> If you travel outside the municipality, you must buy an adult ticket for the part of the journey that is outside the municipality.</div></div>
+      <div class="sec">
+        <div class="stit">Ticket Information</div>
+        <div class="srow"><div class="slb">Ticket type</div><div class="svl">ViborgUNG | Adult | 28 zones</div></div>
+        <div class="srow s2c"><div><div class="slb">Status</div><div class="svl"><span class="gdot"></span>Valid</div></div><div><div class="slb">Valid for</div><div class="svl" id="vf1" style="font-size:12.5px">12d 09h 32m 00s</div></div></div>
+        <div class="srow"><div class="slb">Price</div><div class="svl">210,00 kr.</div></div>
+        <div class="srow"><div class="slb">Ticket number</div><div class="svl">1014287723V1-0</div></div>
+        <div class="srow"><div class="slb">Valid zones</div><div class="ztags"><span class="zt">MT243</span><span class="zt">MT244</span><span class="zt">MT245</span><span class="zt">MT246</span><span class="zm">...</span></div></div>
+      </div>
+      <div class="sec">
+        <div class="stit">Personal information</div>
+        <div class="srow"><div class="slb">Phone number</div><div class="svl">+45 91806640</div></div>
+        <div class="srow"><div class="slb">Name</div><div class="svl">Andrii&nbsp; Anikiienko</div></div>
+        <div class="srow"><div class="slb">Birthday</div><div class="svl">12 Apr 2003</div></div>
+      </div>
+      <div class="sec"><div class="stit">General Information</div><div class="gbox">You must show your ticket at ticket inspection. The ticket is valid for travel during the validity period and area. The common nationwide rules of travel apply. Read more here: <a href="#">https://www.rejsekort.dk/-/media/dms/Joint-National-Travel-Regulations.ashx</a></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide" id="sl1">
+  <div class="page">
+    <div class="toprow">
+      <div class="clockpill" id="clk2">14:28:47</div>
+      <div class="backbtn">&#8249;</div>
+    </div>
+    <div class="wcard">
+      <div class="gb"><div class="gl">Special ticket</div><div class="gt">ViborgUNG</div><div class="gs">Adult</div></div>
+      <div class="gb"><div class="gl">Ticket validity</div><div class="gtx">ViborgUNG is an inexpensive ticket for everyone aged 16 through 26. The ticket can be used on all city buses, local buses, and regional buses within Viborg Municipality &#8212; around the clock. <b>The ticket cannot be used on DSB trains, or GoCollective trains.</b></div></div>
+      <div class="gb" style="margin-bottom:0">
+        <div class="exprow">
+          <span class="exlb">Expires:</span>
+          <div class="exun">
+            <div class="eu"><span class="eun" id="d2">12</span><span class="eul">Days</span></div>
+            <div class="eu"><span class="eun" id="h2">09</span><span class="eul">Hours</span></div>
+            <div class="eu"><span class="eun" id="m2">32</span><span class="eul">Minutes</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-wavy">
+        <svg class="bw-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <defs><pattern id="BW2" x="0" y="0" width="170" height="13" patternUnits="userSpaceOnUse">
+            <path d="M-10 6.5 Q32 0 75 6.5 Q118 13 180 6.5" stroke="#bcb8b0" stroke-width="1.1" fill="none"/>
+          </pattern></defs>
+          <rect width="100%" height="100%" fill="url(#BW2)"/>
+        </svg>
+        <div class="bottom-content">
+          <div class="azbox">
+            <canvas id="az2" width="500" height="500"></canvas>
+          </div>
+          <div class="badge">Inside valid area</div>
+        </div>
+      </div>
+      <div class="chevdiv" onclick="openInfo(1)">&#8964;</div>
+    </div>
+    <div class="dots">
+      <div class="dot" id="db0"></div>
+      <div class="dot on" id="db1"></div>
+    </div>
+    <div class="facespacer"></div>
+  </div>
+  <div class="page-info">
+    <div class="info-top"><div class="uparrow" onclick="closeInfo(1)">&#8963;</div></div>
+    <div class="secs">
+      <div class="sec"><div class="iico">&#9432;</div><div class="ibox">Valid for city buses, local buses, and regional buses within Viborg Municipality. All young people from age 16 through 26 can buy ViborgUNG. ViborgUNG is not valid for travel across the municipal border. <b>The ticket cannot be used on DSB or GoCollective trains.</b> If you travel outside the municipality, you must buy an adult ticket for the part of the journey that is outside the municipality.</div></div>
+      <div class="sec">
+        <div class="stit">Ticket Information</div>
+        <div class="srow"><div class="slb">Ticket type</div><div class="svl">ViborgUNG | Adult | 28 zones</div></div>
+        <div class="srow s2c"><div><div class="slb">Status</div><div class="svl"><span class="gdot"></span>Valid</div></div><div><div class="slb">Valid for</div><div class="svl" id="vf2" style="font-size:12.5px">12d 09h 32m 00s</div></div></div>
+        <div class="srow"><div class="slb">Price</div><div class="svl">210,00 kr.</div></div>
+        <div class="srow"><div class="slb">Ticket number</div><div class="svl">1014287723V1-1</div></div>
+        <div class="srow"><div class="slb">Valid zones</div><div class="ztags"><span class="zt">MT243</span><span class="zt">MT244</span><span class="zt">MT245</span><span class="zt">MT246</span><span class="zm">...</span></div></div>
+      </div>
+      <div class="sec">
+        <div class="stit">Personal information</div>
+        <div class="srow"><div class="slb">Phone number</div><div class="svl">+45 91806640</div></div>
+        <div class="srow"><div class="slb">Name</div><div class="svl">Andrii&nbsp; Anikiienko</div></div>
+        <div class="srow"><div class="slb">Birthday</div><div class="svl">12 Apr 2003</div></div>
+      </div>
+      <div class="sec"><div class="stit">General Information</div><div class="gbox">You must show your ticket at ticket inspection. The ticket is valid for travel during the validity period and area. The common nationwide rules of travel apply. Read more here: <a href="#">https://www.rejsekort.dk/-/media/dms/Joint-National-Travel-Regulations.ashx</a></div></div>
+    </div>
+  </div>
+</div>
+
+</div></div>
+</div>
+
+<script>
+const N = 41;
+const CS = 500;
+const CELL = CS / N;
+const CR = 20, CC = 20;
+const BH = 5;
+
+function hash(r, c, seed){
+  let h = (r*73856093 ^ c*19349663 ^ seed*83492791) >>> 0;
+  h ^= h >>> 13; h = Math.imul(h, 0x9e3779b9) >>> 0;
+  h ^= h >>> 17; h = Math.imul(h, 0x85ebca6b) >>> 0;
+  h ^= h >>> 16;
+  return h & 1;
+}
+
+function isBullseye(r, c){
+  return Math.abs(r-CR) <= BH && Math.abs(c-CC) <= BH;
+}
+function bullseyeDark(r, c){
+  const ring = Math.max(Math.abs(r-CR), Math.abs(c-CC));
+  if(ring === 0) return true;
+  if(ring === 1) return false;
+  if(ring === 2) return true;
+  if(ring === 3) return false;
+  if(ring === 4) return true;
+  return false;
+}
+
+function drawAztec(canvas, seed){
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, CS, CS);
+  for(let r=0; r<N; r++){
+    for(let c=0; c<N; c++){
+      const dark = isBullseye(r,c) ? bullseyeDark(r,c) : (hash(r,c,seed) === 1);
+      if(dark){
+        ctx.fillStyle = '#000';
+        ctx.fillRect(c*CELL, r*CELL, CELL+0.6, CELL+0.6);
+      }
+    }
+  }
+}
+
+// 12 days 9 hours 32 minutes remaining
+const EXPIRY = Date.now() + (12*86400 + 9*3600 + 32*60)*1000;
+function pad(n){ return String(n).padStart(2,'0'); }
+
+const az1 = document.getElementById('az1');
+const az2 = document.getElementById('az2');
+let lastSec = -1;
+
+function tick(){
+  const now = new Date();
+  const ts = pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+  document.getElementById('clk1').textContent = ts;
+  document.getElementById('clk2').textContent = ts;
+
+  const rem = Math.max(0, EXPIRY - Date.now());
+  const s = Math.floor(rem/1000);
+  const d = Math.floor(s/86400);
+  const h = Math.floor((s%86400)/3600);
+  const m = Math.floor((s%3600)/60);
+  const sc = s%60;
+
+  ['d1','d2'].forEach(id=>document.getElementById(id).textContent=pad(d));
+  ['h1','h2'].forEach(id=>document.getElementById(id).textContent=pad(h));
+  ['m1','m2'].forEach(id=>document.getElementById(id).textContent=pad(m));
+  const vstr = d+'d '+h+'h '+pad(m)+'m '+pad(sc)+'s';
+  ['vf1','vf2'].forEach(id=>document.getElementById(id).textContent=vstr);
+
+  const sec = Math.floor(Date.now()/1000);
+  if(sec !== lastSec){
+    drawAztec(az1, sec);
+    drawAztec(az2, sec);
+    lastSec = sec;
+  }
+}
+tick();
+setInterval(tick, 200);
+
+function openInfo(slideIdx){
+  document.getElementById('sl'+slideIdx).querySelector('.page-info').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function closeInfo(slideIdx){
+  document.getElementById('sl'+slideIdx).scrollTo({top:0, behavior:'smooth'});
+}
+
+const car = document.getElementById('car');
+const trk = document.getElementById('trk');
+let cur=0, sx=0, sy=0, horiz=null, active=false;
+
+function goTo(i){
+  cur = Math.max(0,Math.min(1,i));
+  trk.style.transform = 'translateX(-'+cur*100+'%)';
+  ['da0','db0'].forEach(id=>{const e=document.getElementById(id);if(e)e.className='dot'+(cur===0?' on':'');});
+  ['da1','db1'].forEach(id=>{const e=document.getElementById(id);if(e)e.className='dot'+(cur===1?' on':'');});
+}
+
+car.addEventListener('touchstart',e=>{
+  sx=e.touches[0].clientX; sy=e.touches[0].clientY;
+  horiz=null; active=true;
+},{passive:true});
+car.addEventListener('touchmove',e=>{
+  if(!active) return;
+  const dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy;
+  if(horiz===null && (Math.abs(dx)>8 || Math.abs(dy)>8)){
+    horiz = Math.abs(dx) > Math.abs(dy);
+  }
+  if(horiz) e.preventDefault();
+},{passive:false});
+car.addEventListener('touchend',e=>{
+  if(!active||!horiz){active=false;return;}
+  if(Math.abs(e.changedTouches[0].clientX-sx)>44)
+    goTo(e.changedTouches[0].clientX<sx?1:0);
+  active=false;
+},{passive:true});
+car.addEventListener('mousedown',e=>{sx=e.clientX;sy=e.clientY;active=true;horiz=null;});
+window.addEventListener('mousemove',e=>{
+  if(!active)return;
+  if(horiz===null && (Math.abs(e.clientX-sx)>8 || Math.abs(e.clientY-sy)>8)){
+    horiz=Math.abs(e.clientX-sx)>Math.abs(e.clientY-sy);
+  }
+});
+window.addEventListener('mouseup',e=>{
+  if(!active||!horiz){active=false;return;}
+  if(Math.abs(e.clientX-sx)>44)goTo(e.clientX<sx?1:0);
+  active=false;
+});
+</script>
+</body>
+</html>
